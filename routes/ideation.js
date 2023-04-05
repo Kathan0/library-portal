@@ -17,38 +17,39 @@ export function postSubmit(req, resFinal){
         var topic=data.d_topic;
         var booking_time=data.booking_time;
         var p_no=data.p_no;
-        var booking_date=data.date;
+        var booking_date=data.booking_date;
 
         var created_date = ("0" + date.getDate()).slice(-2)+'/'+("0" + (date.getMonth() + 1)).slice(-2)+'/'+date.getFullYear();
         var created_time = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds(); // FORMAT date -----------------
 
         var bitsid = data.bitsid
-        var query = 'select * from users where bitsid = ?';
+
+        var query = 'USE bitslib; select * from users u where u.bitsid = ?';
         connection.query(query, [bitsid], (err, res)=>{
             if(err) throw err;
             var info = Object.values(JSON.parse(JSON.stringify(res)));
             
-            var name = info['name'];
-            var bitsid = info['bitsid'];
-            var email = info['email'];
+            var name = info[1][0].name;
+            var bitsid = info[1][0].bitsid;
+            var email = info[1][0].email;
 
-            query = 'select * from ideation_zone_booking where booking_date= ? and starting_time = ? and stage= "1" ';
+            query = 'select * from ideation_zone_booking l where l.booking_date= ? and l.starting_time = ? and l.stage= 1 ';
             connection.query(query, [booking_date, booking_time], (err, res)=>{
                 if (err) throw err;
                 if(Object.values(JSON.parse(JSON.stringify(res))).length == 0){
                     
-                    query = 'select * from ideation_zone_booking where stage="1" and bitsid= ? and booking_date= ?';
+                    query = 'select * from ideation_zone_booking l where l.stage= 1 and l.bitsid= ? and l.booking_date= ?';
                     connection.query(query, [bitsid, booking_date], (err, res)=>{
                         if(err) throw err;
                         if(Object.values(JSON.parse(JSON.stringify(res))).length == 0){
                             
-                            query_holidays = 'select date from av_room_booking_holiday where date= ?';
-                            connection.query(query, [booking_date], (err, res_holidays)=>{
+                            var query_holidays = 'select date from av_room_booking_holiday l where l.date= ?';
+                            connection.query(query_holidays, [booking_date], (err, res_holidays)=>{
                                 if(err) throw err;
                                 
                                 if(Object.values(JSON.parse(JSON.stringify(res_holidays))).length > 0){
                                 
-                                    var query ='select times from av_room_booking_holiday_times where times=? ';
+                                    var query ='select times from av_room_booking_holiday_times l where l.times=? ';
                                     connection.query(query, [booking_time], (err, res)=>{
                                         if(err) throw err;
                                         if(Object.values(JSON.parse(JSON.stringify(res))).length == 0){
@@ -58,8 +59,8 @@ export function postSubmit(req, resFinal){
                                             var purpose = data.radio_purpose;
                                             var chk ='';
     
-                                            if(typeof data.requirements != 'undefined'){
-                                                requirements = data.checkbox_req;
+                                            if(typeof data.checkbox_req != 'undefined'){
+                                                var requirements = data.checkbox_req;
                                                 for(var chk1 in requirements){
                                                     chk += `${chk1},`
                                                 }
@@ -86,18 +87,18 @@ export function postSubmit(req, resFinal){
                                     })
                                 } else {
                                     if(typeof data.radio_purpose != 'undefined'){
-                                        purpose = data.radio_purpose
+                                        var purpose = data.radio_purpose
                                         var chk = '';
     
                                         if(typeof data.requirements != 'undefined'){
-                                            requirements = data.checkbox_req;
+                                            var requirements = data.checkbox_req;
                                             for(var chk1 in requirements){
                                                 chk += `${chk1},`
                                             }
                                         }
                                         
                                         query = `insert into ideation_zone_booking(name, bitsid, email, mobile, purpose, topic, booking_date, starting_time, p_no, requirements, status, created_date, created_time, stage, action_taken_by) 
-                                        values('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', 1, "")`; 
+                                        values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, "")`; 
                                         connection.query(query, [name, bitsid, email, mobile, purpose, topic, booking_date, booking_time, p_no, chk, "pending", created_date, created_time], (err, res)=>{
                                             if(err) throw err;
     
@@ -139,17 +140,17 @@ export function postCheck(req, resFinal){
     var data = req.body;
     var date = data.date;
 
-    var query = `select iz.booking_date, iz.starting_time 
+    var query = `USE bitslib;
+    select iz.booking_date, iz.starting_time 
     from ideation_zone_booking iz 
     where booking_date= ? and stage="1"`;
     connection.query(query, [date], (err, res)=>{
         if(err) throw err;
         var array = Object.values(JSON.parse(JSON.stringify(res)));
-        if(array.length > 0)
-            res.send({array: array});
+        if(array[1].length > 0)
+            resFinal.send({array: array[1]});
 
-        else res.send({array: [], message:  "You can select any time between 09:00AM to 06:00PM"})
+        else resFinal.send({array: [], message:  "You can select any time between 09:00AM to 06:00PM"})
     })
 }
-
 export default ideationRouter;

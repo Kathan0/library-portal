@@ -21,6 +21,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `bitslib`
 --
+DROP DATABASE IF EXISTS bitslib;
 CREATE DATABASE IF NOT EXISTS `bitslib` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `bitslib`;
 
@@ -2096,6 +2097,7 @@ ALTER TABLE `yls_event`
 --
 -- Database: `phpmyadmin`
 --
+DROP DATABASE IF EXISTS phpmyadmin;
 CREATE DATABASE IF NOT EXISTS `phpmyadmin` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 USE `phpmyadmin`;
 
@@ -2526,6 +2528,7 @@ ALTER TABLE `pma__savedsearches`
 --
 -- Database: `test`
 --
+DROP DATABASE IF EXISTS test;
 CREATE DATABASE IF NOT EXISTS `test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `test`;
 COMMIT;
