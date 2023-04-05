@@ -5,8 +5,8 @@
   "main": "main/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon main/app.js",
-    "database":"node connection/database.js"
+    "start": "node main/app.js",
+    "database": "node connection/database.js"
   },
   "type": "module",
   "author": "",
@@ -19,6 +19,6 @@
     "nodemon": "^2.0.22"
   },
   "engines": {
-    "node":"18.13.0"
+    "node": "18.13.0"
   }
 }

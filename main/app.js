@@ -8,6 +8,7 @@ import innovationRouter  from '../routes/innovation.js'
 import interviewRouter  from '../routes/interview.js'
 import makerspaceRouter  from '../routes/makerspace.js'
 import rareBooksRouter  from '../routes/rare_books.js'
+import loginRouter from "../routes/login.js";
 
 const cors = require('cors');
 
@@ -29,7 +30,7 @@ var upload = multer();
 app.use(upload.array()); 
 app.use(express.static('public'));
 
-
+app.use('/login', loginRouter);
 app.use('/brainstorm', brainstormRouter);
 app.use('/gd', gdRouter);
 app.use('/ideation', ideationRouter);
